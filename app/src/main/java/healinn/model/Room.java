@@ -27,7 +27,7 @@ public class Room implements Bookable {
     }
     @Override
     public String getName() {
-        return type.getDisplayName() + " #" + roomNumber;
+        return type.getDisplayName() + " " + bedType.getDisplayName() + " #" + roomNumber;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class Room implements Bookable {
     public long calculatePrice(LocalDate checkIn, LocalDate CheckOut) {
         long nights = ChronoUnit.DAYS.between(checkIn, CheckOut);
         if (nights <= 0) nights = 1;
-        return nights * type.getPricePerNight();
+        return nights * bedType.getPriceFor(type);
     }
 
     @Override
@@ -61,10 +61,18 @@ public class Room implements Bookable {
     public BedType getBedType() {
         return bedType;
     }
-    public Status geStatus() {
+    public Status getStatus() {
         return status;
     }
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public long   getPricePerNight() { 
+        return bedType.getPriceFor(type); 
+    }
+    
+    public String getFormattedPrice() { 
+        return bedType.getFormattedPrice(type); 
     }
 }
