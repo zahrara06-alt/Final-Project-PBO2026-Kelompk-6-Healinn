@@ -198,11 +198,11 @@ public class UILayout {
 
         Label h1 = new Label("HEALINN");
         h1.setFont(Font.font("Georgia", FontWeight.BOLD, 22));
-        h1.setTextFill(Color.web(UIStyle.TEXT_DARK));
+        h1.setTextFill(Color.web(UIStyle.TEXT_LIGHT));
 
         Label h2 = new Label("HOTEL");
         h2.setFont(Font.font("Georgia", FontWeight.BOLD, 22));
-        h2.setTextFill(Color.web(UIStyle.TEXT_DARK));
+        h2.setTextFill(Color.web(UIStyle.TEXT_LIGHT));
 
         Label sub = new Label("HOTEL & CONVENTION CENTER");
         sub.setFont(Font.font("Georgia", FontWeight.NORMAL, 9));
