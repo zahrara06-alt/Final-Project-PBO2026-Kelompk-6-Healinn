@@ -97,7 +97,7 @@ public class UILayout {
         sidebar.setBackground(new Background(new BackgroundFill(
             Color.web("#f5f0e8"), CornerRadii.EMPTY, Insets.EMPTY)));
 
-        VBox logoBox = buildLogoBox(false);
+        VBox logoBox = buildLogoBox(false, false);
         logoBox.setPadding(new Insets(0, 0, 12, 0));
 
         Line sep = UIComponent.dividerDark(200);
@@ -126,7 +126,7 @@ public class UILayout {
         return sidebar;
     }
 
-    //Sidebar Admin
+//Sidebar Admin
     public static VBox adminSidebar(String activeMenu) {
         VBox sidebar = new VBox(16);
         sidebar.setPrefWidth(260);
@@ -134,9 +134,9 @@ public class UILayout {
         sidebar.setPadding(new Insets(24, 20, 24, 20));
         sidebar.setAlignment(Pos.TOP_CENTER);
         sidebar.setBackground(new Background(new BackgroundFill(
-            Color.web("#f5f0e8"), CornerRadii.EMPTY, Insets.EMPTY)));
+        Color.web("#f5f0e8"), CornerRadii.EMPTY, Insets.EMPTY)));
 
-        VBox logoBox = buildLogoBox(true);
+        VBox logoBox = buildLogoBox(false, true); 
         logoBox.setPadding(new Insets(0, 0, 12, 0));
 
         Line sep = UIComponent.dividerDark(200);
@@ -191,29 +191,35 @@ public class UILayout {
         return header;
     }
 
-    //Logo Box
-    public static VBox buildLogoBox(boolean isAdmin) {
+//Logo Box
+    public static VBox buildLogoBox(boolean isDarkBackground, boolean showAdminPortal) {
         VBox box = new VBox(2);
         box.setAlignment(Pos.CENTER);
 
+        // Menentukan warna text berdasarkan warna background scene
+        String logoColor = isDarkBackground ? UIStyle.TEXT_LIGHT : UIStyle.TEXT_DARK;
+        String subColor  = isDarkBackground ? UIStyle.TEXT_MUTED : "#7A7A7A"; // Abu-abu gelap agar kontras di bg terang
+
         Label h1 = new Label("HEALINN");
         h1.setFont(Font.font("Georgia", FontWeight.BOLD, 22));
-        h1.setTextFill(Color.web(UIStyle.TEXT_LIGHT));
+        h1.setTextFill(Color.web(logoColor));
 
         Label h2 = new Label("HOTEL");
         h2.setFont(Font.font("Georgia", FontWeight.BOLD, 22));
-        h2.setTextFill(Color.web(UIStyle.TEXT_LIGHT));
+        h2.setTextFill(Color.web(logoColor));
 
         Label sub = new Label("HOTEL & CONVENTION CENTER");
         sub.setFont(Font.font("Georgia", FontWeight.NORMAL, 9));
-        sub.setTextFill(Color.web(UIStyle.TEXT_MUTED));
+        sub.setTextFill(Color.web(subColor));
 
         box.getChildren().addAll(h1, h2, sub);
 
-        if (isAdmin) {
+        // Logika memunculkan tulisan ADMIN PORTAL sesuai parameter kedua
+        if (showAdminPortal) {
             Label adminPortal = new Label("ADMIN PORTAL");
             adminPortal.setFont(Font.font("Georgia", FontWeight.BOLD, 10));
-            adminPortal.setTextFill(Color.web(UIStyle.TEXT_MUTED));
+            // Warnanya juga ikut menyesuaikan background
+            adminPortal.setTextFill(Color.web(isDarkBackground ? UIStyle.TEXT_MUTED : UIStyle.TEXT_DARK));
             box.getChildren().add(adminPortal);
         }
         return box;

@@ -30,7 +30,7 @@ public class AdminLoginController {
             "-fx-border-width:1;-fx-border-radius:28;"
         );
 
-        VBox logo = UILayout.buildLogoBox(true);
+        VBox logo = UILayout.buildLogoBox(true, true);
 
         TextField     tfUser = UIComponent.styledTextField("Username Admin");
         PasswordField tfPass = new PasswordField();
