@@ -31,6 +31,23 @@ Aplikasi ini dibuat sebagai Proyek Akhir mata kuliah Pemrograman Berorientasi Ob
 - 🏨 Grid visual status 60 kamar (hijau = tersedia, merah = terisi).
 - 📋 Tabel seluruh transaksi reservasi dari semua customer.
 
+## 🔄 Alur Kerja Aplikasi
+```text
+Buka Aplikasi
+└── Pilih Role
+    ├── Customer
+    │   ├── Login / Daftar Baru
+    │   └── Dashboard
+    │       ├── Pilih Kamar → Isi Tanggal → Input Pembayaran → Konfirmasi
+    │       ├── Ballroom → Pilih Paket → Isi Tanggal & Tujuan → Konfirmasi
+    │       └── Riwayat → Lihat / Batalkan Reservasi
+    └── Admin
+        ├── Login
+        └── Dashboard
+            ├── Status Kamar (grid visual)
+            ├── Semua Reservasi (tabel)
+            └── Statistik (kamar terisi, tamu aktif, pendapatan)
+
 
 
 
