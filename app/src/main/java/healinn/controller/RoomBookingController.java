@@ -6,7 +6,6 @@ import healinn.util.SceneManager;
 import healinn.util.UIComponent;
 import healinn.util.UIStyle;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -22,30 +21,30 @@ public class RoomBookingController {
     private final ReservationService resSvc = new ReservationService();
 
     // Mode Kamar
-    private final Room                       room;
+    private final Room room;
     private final CustomerDashboardController roomParent;
-    private final String                     usernameKamar;
+    private final String usernameKamar;
 
     // Mode Ballroom
-    private final BallroomPackage            ballroomPkg;
-    private final String                     usernameBallroom;
+    private final BallroomPackage ballroomPkg;
+    private final String usernameBallroom;
 
     // pesan kamar
     public RoomBookingController(User user, Room r, CustomerDashboardController parent) {
-        this.room            = r;
-        this.roomParent      = parent;
-        this.usernameKamar   = (user != null) ? user.getUsername() : "";
-        this.ballroomPkg     = null;
+        this.room = r;
+        this.roomParent = parent;
+        this.usernameKamar = (user != null) ? user.getUsername() : "";
+        this.ballroomPkg  = null;
         this.usernameBallroom = null;
     }
 
     // pesan ballroom
     public RoomBookingController(String username, BallroomPackage pkg) {
-        this.ballroomPkg      = pkg;
+        this.ballroomPkg = pkg;
         this.usernameBallroom = username;
-        this.room             = null;
-        this.roomParent       = null;
-        this.usernameKamar    = null;
+        this.room = null;
+        this.roomParent = null;
+        this.usernameKamar = null;
     }
 
     public void showDialog() {
@@ -79,13 +78,13 @@ public class RoomBookingController {
             Label info = UIComponent.lightLabel(room.getName() + " — " + room.getFormattedPrice(), 15);
             root.getChildren().add(info);
 
-            DatePicker dpIn  = new DatePicker(LocalDate.now());
+            DatePicker dpIn = new DatePicker(LocalDate.now());
             DatePicker dpOut = new DatePicker(LocalDate.now().plusDays(1));
             dpIn.setPrefWidth(440);
             dpOut.setPrefWidth(440);
 
             // Estimasi harga (auto-update)
-            Label estimasiLbl = UIComponent.lightLabel("Total: -", 14);
+            Label estimasiLbl = UIComponent.lightLabel("Total: ", 14);
             Runnable updateEst = () -> {
                 LocalDate ci = dpIn.getValue();
                 LocalDate co = dpOut.getValue();
@@ -98,6 +97,7 @@ public class RoomBookingController {
             };
             dpIn.valueProperty().addListener((o, ov, nv)  -> updateEst.run());
             dpOut.valueProperty().addListener((o, ov, nv) -> updateEst.run());
+            updateEst.run();
 
             TextField tfPay = UIComponent.styledTextField("Masukkan nominal pembayaran (angka)");
             tfPay.setPrefWidth(440);
@@ -135,7 +135,7 @@ public class RoomBookingController {
                 stage.close();
                 showSuccessAlert("Reservasi Berhasil",
                     "ID      : " + res.getReservation() + "\n" +
-                    "Kamar   : " + res.getBookableName()   + "\n" +
+                    "Kamar   : " + res.getBookableName() + "\n" +
                     "Check-In: " + res.getFormattedCheckIn() + "\n" +
                     "Check-Out: " + res.getFormattedCheckOut() + "\n" +
                     "Total   : " + res.getFormattedPrice());
@@ -193,10 +193,10 @@ public class RoomBookingController {
                 }
                 stage.close();
                 showSuccessAlert("Reservasi Ballroom Berhasil",
-                    "ID      : " + res.getReservation()               + "\n" +
+                    "ID      : " + res.getReservation() + "\n" +
                     "Paket   : " + res.getBallroomPackage().getDisplayName() + "\n" +
-                    "Tanggal : " + res.getFormattedCheckIn()             + "\n" +
-                    "Tujuan  : " + res.getPurpose()                      + "\n" +
+                    "Tanggal : " + res.getFormattedCheckIn() + "\n" +
+                    "Tujuan  : " + res.getPurpose() + "\n" +
                     "Total   : " + res.getFormattedPrice());
                 SceneManager.getInstance().navigateTo(SceneManager.SCENE_DASHBOARD_BALL);
             });
