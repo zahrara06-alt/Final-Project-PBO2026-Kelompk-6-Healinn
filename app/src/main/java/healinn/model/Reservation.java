@@ -27,8 +27,9 @@ public class Reservation {
 
     private final BallroomPackage ballroomPackage;
     private final String purpose;
+    private final int guestCount;
 
-    public Reservation(String reservationId, String customerUsername, Type type, String bookableId, String bookableName, LocalDate checkIn, LocalDate checkOut, long totalPrice, BallroomPackage ballroomPackage, String purpose) {
+    public Reservation(String reservationId, String customerUsername, Type type, String bookableId, String bookableName, LocalDate checkIn, LocalDate checkOut, long totalPrice, BallroomPackage ballroomPackage, String purpose, int guestCount) {
         this.reservationId = reservationId;
         this.customerUsername = customerUsername;
         this.type = type;
@@ -39,6 +40,7 @@ public class Reservation {
         this.totalPrice = totalPrice;
         this.ballroomPackage = ballroomPackage;
         this.purpose = purpose;
+        this.guestCount = guestCount;
         this.createdAt = LocalDateTime.now();
         this.status = Status.ACTIVE;
     }
@@ -81,6 +83,9 @@ public class Reservation {
     }
     public String getPurpose() {
         return purpose;
+    }
+    public int getGuestCount() {
+        return guestCount;
     }
 
     public String getFormattedCheckIn() {
