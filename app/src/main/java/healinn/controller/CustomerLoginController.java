@@ -29,7 +29,7 @@ public class CustomerLoginController {
             "-fx-effect:dropshadow(three-pass-box,rgba(0,0,0,0.12),12,0,0,6);"
         );
 
-        VBox logo = UILayout.buildLogoBox(false);
+        VBox logo = UILayout.buildLogoBox(false, false);
 
         // tombol login / sign up
         HBox tabBar = new HBox(0);
