@@ -3,7 +3,6 @@ package healinn.controller;
 import healinn.model.*;
 import healinn.service.ReservationService;
 import healinn.service.RoomService;
-import healinn.util.SceneManager;
 import healinn.util.UIComponent;
 import healinn.util.UILayout;
 import healinn.util.UIStyle;
