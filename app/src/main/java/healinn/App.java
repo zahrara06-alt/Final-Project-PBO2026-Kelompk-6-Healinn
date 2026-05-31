@@ -40,6 +40,10 @@ public class App extends Application {
         sm.register(SceneManager.SCENE_ADMIN_RESERVASI, adminDash::createReservasiScene);
         sm.register(SceneManager.SCENE_ADMIN_STATISTIK, adminDash::createStatistikScene);
 
+        primaryStage.setMinWidth(1250);
+        primaryStage.setMinHeight(750);  
+        primaryStage.setResizable(true); 
+
         sm.navigateRoot(SceneManager.SCENE_WELCOME);
     }
     
