@@ -123,7 +123,7 @@ public class ReservationService {
         return nights * bedType.getPriceFor(type);
     }
 
-    //method tambahan
+// method tambahan untuk insert data ke database
     private boolean insertReservation(String resId, String customer, String type, 
                                       String bookableId, String bookableName, 
                                       LocalDate checkIn, LocalDate checkOut,
@@ -144,8 +144,9 @@ public class ReservationService {
             ps.setString(7, checkOut.toString());
             ps.setLong(8, price);
             ps.setString(9, ballroompkg);
-            ps.setInt(10, guestCount);
-            ps.setString(11, purpose);
+            ps.setString(10, purpose);    
+            ps.setInt(11, guestCount);    
+            
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {

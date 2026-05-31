@@ -99,6 +99,28 @@ public class RoomBookingController {
             dpOut.valueProperty().addListener((o, ov, nv) -> updateEst.run());
             updateEst.run();
 
+            //tamu aktif
+            Spinner<Integer> spGuest = new Spinner<>(1, 4, 1);
+            spGuest.setPrefWidth(440);
+            spGuest.setEditable(true);
+            spGuest.setStyle(
+                "-fx-background-color:transparent;" +
+                "-fx-border-color:transparent;"
+            );
+            spGuest.getEditor().setPrefHeight(50);
+            spGuest.getEditor().setStyle(
+                "-fx-background-color:" + UIStyle.CARD_DARK + ";" +
+                "-fx-text-fill:" + UIStyle.TEXT_LIGHT + ";" +
+                "-fx-font-family:'Georgia';" +
+                "-fx-font-size:14px;" +
+                "-fx-border-color:white;" +
+                "-fx-border-width:1.5;" +
+                "-fx-border-radius:10;" +
+                "-fx-background-radius:10;" +
+                "-fx-padding:8 12 8 12;"
+            );
+
+            // nominal bayar
             TextField tfPay = UIComponent.styledTextField("Masukkan nominal pembayaran (angka)");
             tfPay.setPrefWidth(440);
 
@@ -107,6 +129,8 @@ public class RoomBookingController {
             addLabel(root, "Tanggal Check-Out");
             root.getChildren().add(dpOut);
             root.getChildren().add(estimasiLbl);
+            addLabel(root, "Jumlah Tamu (maks. 4 orang)");
+            root.getChildren().add(spGuest);
             addLabel(root, "Nominal Pembayaran");
             root.getChildren().addAll(tfPay, errLabel);
 
@@ -120,6 +144,19 @@ public class RoomBookingController {
                 if (payStr.isBlank()) {
                     showErr(errLabel, "Masukkan nominal pembayaran."); return;
                 }
+
+                int guestCount;
+                try {
+                    guestCount = Integer.parseInt(spGuest.getEditor().getText().trim());
+                    if (guestCount < 1 || guestCount > 4) {
+                        showErr(errLabel, "Jumlah tamu harus antara 1 sampai 4.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    showErr(errLabel, "Jumlah tamu harus berupa angka.");
+                    return;
+                }
+
                 long inputAmt    = Long.parseLong(payStr);
                 long expectedAmt = resSvc.estimateRoomPrice(
                     room.getType(), room.getBedType(), ci, co);
@@ -128,7 +165,7 @@ public class RoomBookingController {
                         RoomType.formatRupiah(expectedAmt) + "."); return;
                 }
                 Reservation res = resSvc.bookRoom(
-                    usernameKamar, room.getRoomId(), ci, co);
+                    usernameKamar, room.getRoomId(), ci, co, guestCount);
                 if (res == null) {
                     showErr(errLabel, "Gagal melakukan reservasi."); return;
                 }
@@ -138,6 +175,7 @@ public class RoomBookingController {
                     "Kamar   : " + res.getBookableName() + "\n" +
                     "Check-In: " + res.getFormattedCheckIn() + "\n" +
                     "Check-Out: " + res.getFormattedCheckOut() + "\n" +
+                    "Tamu      : " + res.getGuestCount() + " orang\n" +
                     "Total   : " + res.getFormattedPrice());
                 if (roomParent != null) roomParent.refresh();
             });
@@ -152,51 +190,140 @@ public class RoomBookingController {
             DatePicker dpEvent = new DatePicker(LocalDate.now().plusDays(7));
             dpEvent.setPrefWidth(440);
 
+            // Spinner jumlah hari (hanya untuk paket per-hari)
             Label daysLabel = new Label("Jumlah Hari");
-            daysLabel.setStyle("-fx-text-fill:" + UIStyle.TEXT_LIGHT + ";-fx-font-family:'Georgia';-fx-font-size:14px;");
+            daysLabel.setStyle(
+                "-fx-text-fill:" + UIStyle.TEXT_LIGHT + ";" +
+                "-fx-font-family:'Georgia';-fx-font-size:14px;");
             Spinner<Integer> daysSpinner = new Spinner<>(1, 30, 1);
             daysSpinner.setPrefWidth(440);
+            daysSpinner.setEditable(true);
+            daysSpinner.setStyle(
+                "-fx-background-color:transparent;" +
+                "-fx-border-color:transparent;"
+            );
+            daysSpinner.getEditor().setPrefHeight(50);
+            daysSpinner.getEditor().setStyle(
+                "-fx-background-color:" + UIStyle.CARD_DARK + ";" +
+                "-fx-text-fill:" + UIStyle.TEXT_LIGHT + ";" +
+                "-fx-font-family:'Georgia';" +
+                "-fx-font-size:14px;" +
+                "-fx-border-color:white;" +
+                "-fx-border-width:1.5;" +
+                "-fx-border-radius:10;" +
+                "-fx-background-radius:10;" +
+                "-fx-padding:8 12 8 12;"
+            );
+
             boolean isPerDay = ballroomPkg.isPerDay();
-            daysLabel.setVisible(isPerDay);  daysLabel.setManaged(isPerDay);
+            daysLabel.setVisible(isPerDay);   daysLabel.setManaged(isPerDay);
             daysSpinner.setVisible(isPerDay); daysSpinner.setManaged(isPerDay);
 
-            TextField tfPurpose = UIComponent.styledTextField("Tujuan Acara (Pernikahan, Seminar, dll)");
+            // Estimasi total (auto-update jika paket per-hari)
+            Label estimasiLbl = UIComponent.lightLabel(
+                "Total yang harus dibayar: " +
+                RoomType.formatRupiah(ballroomPkg.calculateTotal(1)), 14);
+            daysSpinner.valueProperty().addListener((o, ov, nv) ->
+                estimasiLbl.setText("Total yang harus dibayar: " +
+                    RoomType.formatRupiah(ballroomPkg.calculateTotal(nv))));
+
+            // Spinner jumlah tamu ballroom (maks. 500 orang)
+            Spinner<Integer> spGuest = new Spinner<>(1, 500, 1);
+            spGuest.setPrefWidth(440);
+            spGuest.setEditable(true);
+            spGuest.setStyle(
+                "-fx-background-color:transparent;" +
+                "-fx-border-color:transparent;"
+            );
+            spGuest.getEditor().setPrefHeight(50);
+            spGuest.getEditor().setStyle(
+                "-fx-background-color:" + UIStyle.CARD_DARK + ";" +
+                "-fx-text-fill:" + UIStyle.TEXT_LIGHT + ";" +
+                "-fx-font-family:'Georgia';" +
+                "-fx-font-size:14px;" +
+                "-fx-border-color:white;" +
+                "-fx-border-width:1.5;" +
+                "-fx-border-radius:10;" +
+                "-fx-background-radius:10;" +
+                "-fx-padding:8 12 8 12;"
+            );
+
+            TextField tfPurpose = UIComponent.styledTextField(
+                "Tujuan Acara (Pernikahan, Seminar, dll)");
             tfPurpose.setPrefWidth(440);
 
-            // estimasi
-            Label estimasiLbl = UIComponent.lightLabel(
-                "Total: " + RoomType.formatRupiah(ballroomPkg.calculateTotal(1)), 14);
-            daysSpinner.valueProperty().addListener((o, ov, nv) ->
-                estimasiLbl.setText("Total: " +
-                    RoomType.formatRupiah(ballroomPkg.calculateTotal(nv))));
+            // Input validasi pembayaran
+            TextField tfPay = UIComponent.styledTextField(
+                "Masukkan nominal pembayaran (angka)");
+            tfPay.setPrefWidth(440);
 
             addLabel(root, "Tanggal Acara");
             root.getChildren().add(dpEvent);
             root.getChildren().addAll(daysLabel, daysSpinner);
             root.getChildren().add(estimasiLbl);
+            addLabel(root, "Jumlah Tamu (maks. 500 orang)");
+            root.getChildren().add(spGuest);
             addLabel(root, "Tujuan Penggunaan");
-            root.getChildren().addAll(tfPurpose, errLabel);
+            root.getChildren().add(tfPurpose);
+            addLabel(root, "Nominal Pembayaran");
+            root.getChildren().addAll(tfPay, errLabel);
 
             btnConfirm.setOnAction(e -> {
                 LocalDate eventDate = dpEvent.getValue();
                 if (eventDate == null || eventDate.isBefore(LocalDate.now())) {
-                    showErr(errLabel, "Pilih tanggal acara yang valid."); return;
+                    showErr(errLabel, "Pilih tanggal acara yang valid.");
+                    return;
                 }
+
+                // validasi jumlah tamu
+                int guestCount;
+                try {
+                    guestCount = Integer.parseInt(spGuest.getEditor().getText().trim());
+                    if (guestCount < 1 || guestCount > 500) {
+                        showErr(errLabel, "Jumlah tamu harus antara 1 sampai 500.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    showErr(errLabel, "Jumlah tamu harus berupa angka.");
+                    return;
+                }
+
                 if (tfPurpose.getText().isBlank()) {
-                    showErr(errLabel, "Tujuan penggunaan tidak boleh kosong."); return;
+                    showErr(errLabel, "Tujuan penggunaan tidak boleh kosong.");
+                    return;
                 }
+
+                // Validasi pembayaran
+                String payStr = tfPay.getText().trim().replaceAll("[^0-9]", "");
+                if (payStr.isBlank()) {
+                    showErr(errLabel, "Masukkan nominal pembayaran.");
+                    return;
+                }
+                    int days = daysSpinner.getValue();
+                    long inputAmt    = Long.parseLong(payStr);
+                    long expectedAmt = ballroomPkg.calculateTotal(days);
+                    if (inputAmt != expectedAmt) {
+                        showErr(errLabel, "Pembayaran tidak sesuai. Harus tepat " +
+                            RoomType.formatRupiah(expectedAmt) + ".");
+                        return;
+                    }
+
                 Reservation res = resSvc.bookBallroom(
                     usernameBallroom, ballroomPkg,
-                    eventDate, daysSpinner.getValue(), tfPurpose.getText().trim());
+                    eventDate, days,
+                    tfPurpose.getText().trim(),
+                    guestCount);
                 if (res == null) {
-                    showErr(errLabel, "Ballroom tidak tersedia."); return;
+                    showErr(errLabel, "Ballroom tidak tersedia.");
+                    return;
                 }
                 stage.close();
                 showSuccessAlert("Reservasi Ballroom Berhasil",
-                    "ID      : " + res.getReservation() + "\n" +
+                    "ID      : " + res.getReservation()                   + "\n" +
                     "Paket   : " + res.getBallroomPackage().getDisplayName() + "\n" +
-                    "Tanggal : " + res.getFormattedCheckIn() + "\n" +
-                    "Tujuan  : " + res.getPurpose() + "\n" +
+                    "Tanggal : " + res.getFormattedCheckIn()                 + "\n" +
+                    "Tamu    : " + res.getGuestCount() + " orang\n"          +
+                    "Tujuan  : " + res.getPurpose()                          + "\n" +
                     "Total   : " + res.getFormattedPrice());
                 SceneManager.getInstance().navigateTo(SceneManager.SCENE_DASHBOARD_BALL);
             });
