@@ -87,6 +87,7 @@ public class Database {
                     total_price       INTEGER NOT NULL,
                     ballroom_pkg      TEXT,            -- null jika tipe ROOM
                     purpose           TEXT,            -- tujuan penggunaan ballroom, null jika tipe ROOM
+                    guest_count       INTEGER NOT NULL DEFAULT 1,
                     status            TEXT NOT NULL    -- 'ACTIVE', 'COMPLETED', 'CANCELLED'
                 )
             """);
