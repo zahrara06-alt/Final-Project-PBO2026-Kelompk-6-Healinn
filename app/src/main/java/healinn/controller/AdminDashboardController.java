@@ -10,28 +10,32 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.layout.Priority; 
 
 import java.util.List;
 
 public class AdminDashboardController {
-
     private final RoomService        roomSvc  = new RoomService();
     private final ReservationService resSvc   = new ReservationService();
 
-    // scene status Kamar 
     public Pane createStatusScene() {
         BorderPane root = new BorderPane();
         root.setBackground(UIStyle.gradientBackground());
         root.setLeft(UILayout.adminSidebar("status"));
 
-        VBox content = new VBox(20);
-        content.setPadding(new Insets(0, 40, 40, 40));
-        content.getChildren().add(UILayout.contentHeader("STATUS KAMAR", "Admin", 1000));
+        VBox mainContainer = new VBox(20);
+        mainContainer.setPadding(new Insets(0, 40, 40, 40));
+        mainContainer.setMaxHeight(Double.MAX_VALUE);
+        VBox.setVgrow(mainContainer, Priority.ALWAYS);
+        
+        mainContainer.getChildren().add(UILayout.contentHeader("STATUS KAMAR", "Admin", 1000));
 
-        // tampilkan pertipe dan bed type
+        VBox scrollableContent = new VBox(20);
+        scrollableContent.setMaxHeight(Double.MAX_VALUE);
+
         for (RoomType type : RoomType.values()) {
             Label typeLabel = UIComponent.sectionTitle(type.getDisplayName());
-            content.getChildren().add(typeLabel);
+            scrollableContent.getChildren().add(typeLabel);
 
             for (BedType bedType : BedType.values()) {
                 Label bedLabel = UIComponent.lightLabel(
@@ -46,7 +50,7 @@ public class AdminDashboardController {
                         r.isAvailable(), true);
                     flow.getChildren().add(card);
                 }
-                content.getChildren().addAll(bedLabel, flow);
+                scrollableContent.getChildren().addAll(bedLabel, flow);
             }
         }
 
@@ -54,16 +58,19 @@ public class AdminDashboardController {
             UIComponent.lightLabel("■ Tersedia (Hijau)", 13),
             UIComponent.lightLabel("■ Terisi (Merah)", 13));
         legend.setPadding(new Insets(16, 0, 0, 0));
-        content.getChildren().add(legend);
+        scrollableContent.getChildren().add(legend);
 
-        ScrollPane scroll = new ScrollPane(content);
+        ScrollPane scroll = new ScrollPane(scrollableContent);
         scroll.setFitToWidth(true);
-        scroll.setStyle("-fx-background:transparent;-fx-background-color:transparent;");
-        root.setCenter(scroll);
+        scroll.setFitToHeight(true);
+        VBox.setVgrow(scroll, Priority.ALWAYS);
+        scroll.setStyle("-fx-background:transparent;-fx-background-color:transparent;-fx-viewport-background:transparent;");
+
+        mainContainer.getChildren().add(scroll);
+        root.setCenter(mainContainer);
         return root;
     }
 
-    // scene statistik 
     public Pane createStatistikScene() {
         BorderPane root = new BorderPane();
         root.setBackground(UIStyle.gradientBackground());
@@ -88,31 +95,40 @@ public class AdminDashboardController {
         return root;
     }
 
-    // scene semua reservasi 
     public Pane createReservasiScene() {
         BorderPane root = new BorderPane();
         root.setBackground(UIStyle.gradientBackground());
         root.setLeft(UILayout.adminSidebar("reservasi"));
 
-        VBox content = new VBox(16);
-        content.setPadding(new Insets(0, 40, 40, 40));
-        content.getChildren().add(UILayout.contentHeader("SEMUA RESERVASI", "Admin", 1000));
+        VBox mainContainer = new VBox(16);
+        mainContainer.setPadding(new Insets(0, 40, 40, 40));
+        mainContainer.setMaxHeight(Double.MAX_VALUE);
+        VBox.setVgrow(mainContainer, Priority.ALWAYS);
+        
+        mainContainer.getChildren().add(UILayout.contentHeader("SEMUA RESERVASI", "Admin", 1000));
+
+        VBox scrollableContent = new VBox(16);
+        scrollableContent.setMaxHeight(Double.MAX_VALUE);
 
         List<Reservation> all = resSvc.getAll();
 
         if (all.isEmpty()) {
             Label empty = UIComponent.lightLabel("Belum ada reservasi.", 15);
-            content.getChildren().add(empty);
+            scrollableContent.getChildren().add(empty);
         } else {
             for (Reservation r : all) {
-                content.getChildren().add(buildReservasiCard(r));
+                scrollableContent.getChildren().add(buildReservasiCard(r));
             }
         }
 
-        ScrollPane scroll = new ScrollPane(content);
+        ScrollPane scroll = new ScrollPane(scrollableContent);
         scroll.setFitToWidth(true);
-        scroll.setStyle("-fx-background:transparent;-fx-background-color:transparent;");
-        root.setCenter(scroll);
+        scroll.setFitToHeight(true);
+        VBox.setVgrow(scroll, Priority.ALWAYS);
+        scroll.setStyle("-fx-background:transparent;-fx-background-color:transparent;-fx-viewport-background:transparent;");
+        
+        mainContainer.getChildren().add(scroll);
+        root.setCenter(mainContainer);
         return root;
     }
 

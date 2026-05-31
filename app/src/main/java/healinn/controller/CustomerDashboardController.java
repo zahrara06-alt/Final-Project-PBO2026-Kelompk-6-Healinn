@@ -11,7 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
 public class CustomerDashboardController {
-
     private final RoomService roomSvc = new RoomService();
     private String loggedInUsername = "User";
 
@@ -24,11 +23,17 @@ public class CustomerDashboardController {
 
         VBox containerLayout = new VBox(10);
         containerLayout.setPadding(new Insets(0, 40, 40, 40));
+        
+        containerLayout.setMaxHeight(Double.MAX_VALUE);
+        VBox.setVgrow(containerLayout, Priority.ALWAYS);
+
         containerLayout.getChildren().add(
-            UILayout.contentHeader("PILIH KAMAR", loggedInUsername, 1000));
+            UILayout.contentHeader("PILIH KAMAR", loggedInUsername, 200));
 
         VBox scrollableContent = new VBox(10);
         scrollableContent.setPadding(new Insets(0, 10, 0, 0));
+        
+        scrollableContent.setMaxHeight(Double.MAX_VALUE);
 
         for (RoomType type : RoomType.values()) {
             for (BedType bed : BedType.values()) {
@@ -41,8 +46,9 @@ public class CustomerDashboardController {
 
         ScrollPane scroll = new ScrollPane(scrollableContent);
         scroll.setFitToWidth(true);
-        scroll.setPrefHeight(560);
-        scroll.setStyle("-fx-background:transparent;-fx-background-color:transparent;");
+        scroll.setFitToHeight(true);
+        VBox.setVgrow(scroll, Priority.ALWAYS);
+        scroll.setStyle("-fx-background:transparent;-fx-background-color:transparent;-fx-viewport-background:transparent;");
 
         containerLayout.getChildren().add(scroll);
         root.setCenter(containerLayout);
